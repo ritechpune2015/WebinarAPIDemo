@@ -1,8 +1,11 @@
 ﻿using APIDemo.Dtos;
+using APIDemo.Helpers;
+using APIDemo.Interfaces;
 using APIDemo.Mappers;
 using APIDemo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace APIDemo.Controllers
 {
@@ -10,26 +13,24 @@ namespace APIDemo.Controllers
     [ApiController]
     public class ProductAPIController : ControllerBase
     {
-        ProductContext cntx;
-        public ProductAPIController(ProductContext cntx)
+        private readonly IProductRepo _repo;
+        public ProductAPIController(IProductRepo repo)
         { 
-          this.cntx = cntx;
+          this._repo = repo;
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public async Task <IActionResult> GetProducts([FromQuery]QueryObject query)
         {
             //return Ok(this.cntx.Products.ToList());
-            var res = this.cntx.Products.Select(
-                 x => x.MapToProductDto()
-                );
+            var res =await this._repo.GetAll(query);
             return Ok(res);
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult GetProducts([FromRoute]int id)
+        public async Task<IActionResult> GetProducts([FromRoute]int id)
         {
-            var rec = this.cntx.Products.Find(id).MapToProductDto();
+            var rec = await this._repo.GetById(id);
             if (rec == null)
             {
                 return NotFound();
@@ -39,19 +40,17 @@ namespace APIDemo.Controllers
 
 
         [HttpPost]
-        public IActionResult Create([FromBody]ProductCreateDto rec)
+        public async Task<IActionResult> Create([FromBody]ProductCreateDto rec)
         {
             if (rec == null)
                 return BadRequest("Model is Null!");
 
-            var model = rec.MapToProduct();
-            this.cntx.Products.Add(model);
-            this.cntx.SaveChanges();
-            return CreatedAtAction("Create", rec);
+            var res=await this._repo.Create(rec);
+            return CreatedAtAction("Create", res);
         }
 
         [HttpPut("{id:int}")]
-        public IActionResult Update([FromRoute]int id,[FromBody]ProductUpdateDto rec)
+        public async  Task<IActionResult> Update([FromRoute]int id,[FromBody]ProductUpdateDto rec)
         {
             if (rec == null)
                 return BadRequest("Model is Null!");
@@ -59,29 +58,15 @@ namespace APIDemo.Controllers
             if (id == 0)
                 return BadRequest("ID can not be Zero!");
 
-            var oldrec = this.cntx.Products.Find(id);
-            if (oldrec == null)
-                return NotFound("Record Not Found");
-            
-            oldrec.ProductName=rec.ProductName;
-            oldrec.Price=rec.Price;
-            oldrec.ProductCategoryID = rec.ProductCategoryID;
-            oldrec.MfgName =rec.MfgName;
-            this.cntx.SaveChanges();
-            return Ok(oldrec);
+           var res = this._repo.Update(id, rec);
+            return Ok(res);
         }
 
         [HttpDelete("{id:int}")]
-        public IActionResult Delete([FromRoute] int id) {
+        public async Task<IActionResult> Delete([FromRoute] int id) {
             if (id == 0)
                 return BadRequest();
-          
-            var oldrec = this.cntx.Products.Find(id);
-            if (oldrec == null)
-                return NotFound();
-
-            this.cntx.Products.Remove(oldrec);
-            this.cntx.SaveChanges();
+            await this._repo.Delete(id);
             return NoContent();
         }
 

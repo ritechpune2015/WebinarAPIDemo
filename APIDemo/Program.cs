@@ -1,4 +1,6 @@
+using APIDemo.Interfaces;
 using APIDemo.Models;
+using APIDemo.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,8 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContextPool<ProductContext>(
      opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("scon"))
     );
-
-
+builder.Services.AddScoped<IProductRepo, ProductRepo>();
 
 var app = builder.Build();
 

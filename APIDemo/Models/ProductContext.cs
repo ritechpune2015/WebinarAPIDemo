@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace APIDemo.Models
 {
-    public class ProductContext:DbContext
+    public class ProductContext:IdentityDbContext<AppUser> //DbContext
     {
         public ProductContext(DbContextOptions<ProductContext> opt):base(opt)
         { 
@@ -10,7 +12,7 @@ namespace APIDemo.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<ProductCategory>().HasData(
                  new ProductCategory() {ProductCategoryID=1,ProductCategoryName="Electornics"},
                  new ProductCategory() { ProductCategoryID = 2, ProductCategoryName = "Books" }
