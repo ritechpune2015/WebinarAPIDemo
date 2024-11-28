@@ -1,6 +1,7 @@
 using APIDemo.Interfaces;
 using APIDemo.Models;
 using APIDemo.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContextPool<ProductContext>(
      opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("scon"))
     );
+
+builder.Services.AddIdentity<AppUser, IdentityRole>(
+     opt => {
+         opt.Password.RequireNonAlphanumeric = false;
+         opt.Password.RequiredLength = 4;
+         opt.Password.RequireDigit = false;
+         opt.Password.RequireLowercase = false;
+         opt.Password.RequireUppercase = false;
+     }
+    ).AddEntityFrameworkStores<ProductContext>();
+
 builder.Services.AddScoped<IProductRepo, ProductRepo>();
+builder.Services.AddScoped<IUserAuthRepo, UserAuthRepo>();
 
 var app = builder.Build();
 

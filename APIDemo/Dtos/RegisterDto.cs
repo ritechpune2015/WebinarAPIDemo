@@ -2,19 +2,21 @@
 
 namespace APIDemo.Dtos
 {
-    public class UserDto
+    public class RegisterDto
     {
         [Required]
         public string FullName { get; set; }
         //public string UserName { get; set; }
+        
         [EmailAddress]
         [Required]
         public string EmailID { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
         [Required]
-        [StringLength(10,MinimumLength =5,ErrorMessage ="Length Invalid Email ID")]
+        [StringLength(20,MinimumLength =5,ErrorMessage ="Length Invalid For Address")]
         public string Address { get; set; }
         [Required]
         public string MobileNo { get; set; }
