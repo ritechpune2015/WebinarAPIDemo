@@ -6,5 +6,7 @@ namespace APIDemo.Interfaces
     public interface IUserAuthRepo
     {
         Task<IdentityResult> Register(RegisterDto rec);
+        Task<LoginResultDto> Login(LoginDto rec);
+
     }
 }

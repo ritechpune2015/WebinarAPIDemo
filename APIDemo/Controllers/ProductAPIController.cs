@@ -3,6 +3,7 @@ using APIDemo.Helpers;
 using APIDemo.Interfaces;
 using APIDemo.Mappers;
 using APIDemo.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ namespace APIDemo.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class ProductAPIController : ControllerBase
     {
         private readonly IProductRepo _repo;
@@ -20,6 +22,7 @@ namespace APIDemo.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task <IActionResult> GetProducts([FromQuery]QueryObject query)
         {
             //return Ok(this.cntx.Products.ToList());
@@ -50,7 +53,7 @@ namespace APIDemo.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async  Task<IActionResult> Update([FromRoute]int id,[FromBody]ProductUpdateDto rec)
+        public IActionResult Update([FromRoute]int id,[FromBody]ProductUpdateDto rec)
         {
             if (rec == null)
                 return BadRequest("Model is Null!");

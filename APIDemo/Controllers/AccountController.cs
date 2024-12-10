@@ -1,5 +1,6 @@
 ﻿using APIDemo.Dtos;
 using APIDemo.Interfaces;
+using APIDemo.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace APIDemo.Controllers
@@ -9,9 +10,12 @@ namespace APIDemo.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IUserAuthRepo uauth;
-        public AccountController(IUserAuthRepo auth)
+        private readonly ITokenService tokenService;
+        
+        public AccountController(IUserAuthRepo auth,ITokenService token)
         {
             this.uauth= auth;
+            this.tokenService= token;
         }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]RegisterDto rec)
@@ -31,6 +35,27 @@ namespace APIDemo.Controllers
             else
             {
                 return StatusCode(500, res.Errors);
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto rec)
+        {
+            if (rec == null)
+                return BadRequest("Invalid Email ID or Password!");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+
+
+            var res = await this.uauth.Login(rec);
+            if (res.IsSuccess)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return Unauthorized("Invalid Email Id or Password!");
             }
         }
     }

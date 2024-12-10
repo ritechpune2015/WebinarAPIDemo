@@ -1,6 +1,7 @@
 ﻿using APIDemo.Dtos;
 using APIDemo.Models;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using System.Runtime.CompilerServices;
 
 namespace APIDemo.Mappers
 {
@@ -15,6 +16,7 @@ namespace APIDemo.Mappers
                  ProductCategoryID=rec.ProductCategoryID,
                  ProductID=rec.ProductID,
                  ProductName=rec.ProductName
+                 //ProductCategoryName=rec.ProductCategory.ProductCategoryName
             };
         }
 
